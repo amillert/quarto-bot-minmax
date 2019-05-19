@@ -71,23 +71,18 @@ print("Time for bots' move")
 print(moves_dict)
 print(board)
 
-class Node:
-    def __init__(self, board, rest_positions, rest_pawns, children=[]):
+class Move:
+    def __init__(self, board, rest_positions, rest_pawns, moves=[]):
         self.board = board.copy()
         self.rest_positions = rest_positions
         self.rest_pawns = rest_pawns
-        self.children = children
+        self.moves = moves
     
-    def add_child(self, child):
-        assert isinstance(child, Node), f"Child must be of type `Node`, passed type: {type(child)}"
-        self.children.append(child)
+    def add_child(self, move):
+        assert isinstance(move, Move), f"Single move must be of type `Move`, passed type: {type(move)}"
+        self.moves.append(move)
 
-class Tree:
-    def __init__(self, root=None):
-        assert root, "Root must be specified; otherwise we can't build no tree"
-        self.root = root
-
-def recursive_combinations(pos, pawns, board):
+def recursive_combinations(pos, pawns, board, root):
     # import time
     # time.sleep(0.5)
     if pawns:
@@ -99,16 +94,14 @@ def recursive_combinations(pos, pawns, board):
             i, j = [int(x) for x in pos_comb]
             board_cpy[i][j] = pawn_comb
             print(board_cpy)
-            # dodawanie Node'a do drzewka
-            # node = Node(board_cpy, [x for x in pos if x != pos_comb], [x for x in pawns if x != pawn_comb])
-
-            # dla każdego trzeba tworzyć dzieci
             rest_pos = [x for x in pos if x != pos_comb]
             rest_pawns = [x for x in pawns if x != pawn_comb]
-            recursive_combinations(copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns), copy.deepcopy(board_cpy))
+            node = Move(copy.deepcopy(board_cpy), copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns))
+            root.add_child(node)
+            return recursive_combinations(copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns), copy.deepcopy(board_cpy), node)
     else:
-        print("KONIEC")
-        return
+        print("END of branch")
+        return root
 
 # this part is only to ommit making moves in random while
 for po, pa in zip(poss, pawnss):
@@ -117,4 +110,5 @@ for po, pa in zip(poss, pawnss):
 # print(board)
 # exit(12)
 
-recursive_combinations(copy.deepcopy(pos), copy.deepcopy(pawns), board)
+root = Move(copy.deepcopy(board), copy.deepcopy(pos), copy.deepcopy(pawns))
+root = recursive_combinations(copy.deepcopy(pos), copy.deepcopy(pawns), board, root)
