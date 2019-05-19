@@ -87,10 +87,13 @@ class Move:
         self.moves.append(move)
 
     def traverse_moves(self, root):
+        import hashlib
         if root.moves:
-            # if root.level == 1:
-            #     print(root.level, len(root.moves))
-            print(root.level, len(root.moves))
+            if root.level == 3:
+                # Checking if all the boards on the same level are the same
+                # Seem like they're not, which is what we wanted to prove
+                print(root.level, len(root.moves))
+                print(hashlib.sha1(str([x.board for x in root.moves]).encode()).hexdigest())
             for move in root.moves:
                 self.traverse_moves(move)
         return
@@ -108,7 +111,6 @@ def recursive_combinations(pos, pawns, board, root):
             board_cpy = copy.deepcopy(board)
             i, j = [int(x) for x in pos_comb]
             board_cpy[i][j] = pawn_comb
-            print(board_cpy)
             rest_pos = [x for x in pos if x != pos_comb]
             rest_pawns = [x for x in pawns if x != pawn_comb]
             node = Move(copy.deepcopy(board_cpy), copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns), root.level+1)
@@ -127,4 +129,4 @@ for po, pa in zip(poss, pawnss):
 
 root = Move(copy.deepcopy(board), copy.deepcopy(pos), copy.deepcopy(pawns))
 recursive_combinations(copy.deepcopy(pos), copy.deepcopy(pawns), board, root)
-root.traverse_moves(root)
+root.traverse_moves(root) 
