@@ -70,7 +70,7 @@ print("Time for bots' move")
 
 print(moves_dict)
 print(board)
-
+xdd = []
 class Move:
     def __init__(self, board, rest_positions, rest_pawns, level=0):
         self.board = board.copy()
@@ -85,17 +85,75 @@ class Move:
         print(self.moves)
         print("ADD move moves: ", len(self.moves))
         self.moves.append(move)
+    
+    @staticmethod
+    def transpose(board):
+        return [[x] for x in zip(*board)]
 
-    def traverse_moves(self, root):
+    # @staticmethod
+    # def flip_along_x_axis(board):
+    #     return board[::-1]
+
+    @staticmethod
+    def is_flatten_empty(list):
+        return [x for sub in list for x in sub if not x]
+
+    @staticmethod
+    def is_horizontally_winning(board):
+        for row in board:
+            for i in range(len(row[0])):
+                if len(set([x[i] for x in row])) == 1:
+                    return True
+        return False
+
+    def is_vertically_winning(self, board):
+        self.is_horizontally_winning(self.transpose(board))
+
+    @staticmethod
+    def is_na_szage_winning(board):
+        length = len(board[0])
+        diagonal1 = [board[i][i] for i in range(length)]
+        diagonal2 = [board[length-i-1][i] for i in [x for x in range(length)]]
+
+        for diagonal in [diagonal1, diagonal2]:
+            for i in range(len(diagonal[0])):  # it's same as length, but these two mean sth else
+                if len(set([x[i] for x in diagonal])) == 1:
+                    return True
+        return False
+
+    def check_if_winning(self, board):
+        if self.is_vertically_winning or self.is_horizontally_winning or self.is_na_szage_winning:
+            return True
+        return False
+
+    def minmax(self, root):
+        if root.moves:
+            if not self.is_flatten_empty(root.board):
+                print("weszlo")
+                print(root.board)
+                winning = self.check_if_winning(root.board)
+                if winning:
+                    print("Board")
+                    print(board)
+                    print("IS WINNING!")
+                    print()
+                    exit(14)
+            for move in root.moves:
+                self.minmax(move)
+        return
+    
+    def traverse_moves(self, root, level):
         import hashlib
         if root.moves:
-            if root.level == 3:
+            if root.level == level:
                 # Checking if all the boards on the same level are the same
                 # Seem like they're not, which is what we wanted to prove
                 print(root.level, len(root.moves))
-                print(hashlib.sha1(str([x.board for x in root.moves]).encode()).hexdigest())
+                six_digits_hash = hashlib.sha1(str(sorted([x.board for x in root.moves])).encode()).hexdigest()[-6:]
+                print(six_digits_hash)
+                xdd.append(six_digits_hash)
             for move in root.moves:
-                self.traverse_moves(move)
+                self.traverse_moves(move, level)
         return
 
 def recursive_combinations(pos, pawns, board, root):
@@ -129,4 +187,9 @@ for po, pa in zip(poss, pawnss):
 
 root = Move(copy.deepcopy(board), copy.deepcopy(pos), copy.deepcopy(pawns))
 recursive_combinations(copy.deepcopy(pos), copy.deepcopy(pawns), board, root)
-root.traverse_moves(root) 
+# root.traverse_moves(root, 3)
+# print(xdd)
+# print(len(xdd))  # 3600
+# print(len(list(set(xdd))))  # 600
+# which i assume means, we can remove 5/6 of all the branches at this level, since they're symmetirc
+root.minmax(root)
