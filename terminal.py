@@ -36,6 +36,30 @@ def bot_random_move(possible_positions, possible_pawns, pawn_picked_for_bot):
     print()
     return possible_positions, possible_pawns, pawn_chosen_for_player
 
+def bot_move(possible_positions, possible_pawns, pawn_picked_for_bot):
+    # current situation
+    root = Move(copy.deepcopy(board), copy.deepcopy(pos), copy.deepcopy(pawns))
+    # generating moves
+    recursive_combinations(copy.deepcopy(pos), copy.deepcopy(pawns), board, root)
+    # finding first good move
+    steps = root.minmax(root)
+    print(steps)
+    if steps:
+        print("from minmax")
+        bot_chosen_position = [x[0] for x in steps if x[1] == pawn_picked_for_bot][0]
+        pawn_chosen_for_player = [x[1] for x in steps][1]
+    else:
+        print("from random")
+        bot_chosen_position = random.choice(possible_positions)
+        pawn_chosen_for_player = random.choice(possible_pawns)
+    print(bot_chosen_position)
+    possible_positions = [x for x in possible_positions if x != bot_chosen_position]
+    moves_dict[bot_chosen_position] = pawn_picked_for_bot
+    i, j = [int(x) for x in bot_chosen_position]
+    board[i][j] = pawn_picked_for_bot
+    possible_pawns = [x for x in possible_pawns if x != pawn_chosen_for_player]
+    return possible_positions, possible_pawns, pawn_chosen_for_player
+
 def user_move(possible_positions, possible_pawns, pawn_chosen_for_player):
     print(f"Pawn chosen for you is: {pawn_chosen_for_player}")
     print("Possible positions are: ", possible_positions)
@@ -129,7 +153,7 @@ class Move:
     #     return board[::-1]
 
     @staticmethod
-    def is_flatten_empty(list):
+    def has_empty_spot(list):
         return [x for sub in list for x in sub if not x]
 
     @staticmethod
@@ -160,46 +184,46 @@ class Move:
             return True
         return False
 
-    def minmax(self, root):
-        if root.moves:
-            if root.level == 4:
-            # if not root.is_flatten_empty(root.board):
-                print(root.board)
-                winning = self.check_if_winning(root.board)
-                if winning:
-                    print("Board")
-                    for row in board:
-                        print(row)
-                    print("IS WINNING!")
-                    print()
-                    # exit(14)
-            for move in root.moves:
-                self.minmax(move)
-        return
-    
-    def traverse_moves(self, root, level):
-        import hashlib
-        if root.moves:
-            if root.level == level:
-            # if not root.is_flatten_empty(root.board):
-                # Checking if all the boards on the same level are the same
-                # Seem like they're not, which is what we wanted to prove
-                print(root.level, len(root.moves))
+    @staticmethod
+    def find_difference_between_boards(board_x, board_y):
+        for i in range(len(board_y)):
+            for j in range(len(board_x[i])):
+                if board_x[i][j] != board_y[i][j]:
+                    return i, j, [x for x in [board_x[i][j], board_y[i][j]] if x][0]
+
+    def minmax(self, root, steps=[]):
+        if not self.has_empty_spot(root.board):
+            winning = self.check_if_winning(root.board)
+            if winning and [x[1] for x in steps][0] == last_picked_pawn:
+                print("Board")
                 for row in root.board:
                     print(row)
-                six_digits_hash = hashlib.sha1(str(sorted([x.board for x in root.moves])).encode()).hexdigest()[-6:]
-                print(six_digits_hash)
-                print()
-                xdd.append(six_digits_hash)
-            for move in root.moves:
-                self.traverse_moves(move, level)
-        return
+                print("IS WINNING!")
+                print("WINNING STEPS")
+                return steps
+        for move in root.moves:
+            i, j, pawn = self.find_difference_between_boards(root.board, move.board)
+            position = ''.join([str(i), str(j)])
+            # that's cheating, dunno if not totaly bad approach
+            # otherwise last move is always last... which is weird
+            return self.minmax(move, [[position, pawn]]+steps)
+        # return draw move
+    
+# def traverse_moves(root, level):
+#     for move in root.moves:
+#         traverse_moves(move, level)
+#     #  printing full boards
+#     if not root.has_empty_spot(root.board):
+#         for row in root.board:
+#             print(row)
+#         print()
+#     return
 
 def recursive_combinations(pos, pawns, board, root):
     # import time
     if pawns:
         combs = [[x, y] for x in pos for y in pawns]
-        print(f"{len(combs)} combinations, {len(pos)} positions, {len(pawns)} pawns")
+        # print(f"{len(combs)} combinations, {len(pos)} positions, {len(pawns)} pawns")
         for comb in combs:
             board_cpy = copy.deepcopy(board)
             pos_comb, pawn_comb = comb
@@ -209,28 +233,30 @@ def recursive_combinations(pos, pawns, board, root):
             rest_pawns = [x for x in pawns if x != pawn_comb]
             node = Move(copy.deepcopy(board_cpy), copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns), root.level+1)
             root.add_move(node)
-            print()
-            print(f"root at level {root.level} added node on level {node.level}")
-            print(f"root has {len(root.moves)} moves already")
-            # time.sleep(1)
+            # print()
+            # print(f"root at level {root.level} added node on level {node.level}")
+            # print(f"root has {len(root.moves)} moves already")
             recursive_combinations(copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns), copy.deepcopy(board_cpy), node)
+    # else:
+    #     print("END of branch")
+        ### return root
+
+
+# traverse_moves(root, 5)
+
+while move < 16:
+    if not move % 2:
+        # pos, pawns, pawn_picked_for_bot = user_test(pos, pawns, pawn_chosen_for_player)
+        pos, pawns, pawn_picked_for_bot = user_move(pos, pawns, pawn_chosen_for_player)
     else:
-        print("END of branch")
-        # return root
+        pos, pawns, pawn_chosen_for_player = bot_move(pos, pawns, pawn_picked_for_bot)
+    move += 1
+# print(move)
+# print(pawns)
 
-# this part is only to ommit making moves in random while
-# for po, pa in zip(pos, pawns):
-#     i, j = [int(x) for x in po]
-#     board[i][j] = pa
-# print(board)
-
-root = Move(copy.deepcopy(board), copy.deepcopy(pos), copy.deepcopy(pawns))
-recursive_combinations(copy.deepcopy(pos), copy.deepcopy(pawns), board, root)
-# root.traverse_moves(root, 4)
-print(root.moves[0].moves[0].moves[0].moves[0].moves[0].board)  # proof that the whole tree is being built
-exit(12)
+# exit(12)
+# print(root.moves[0].moves[0].moves[0].moves[0].moves[0].board)  # proof that the whole tree is being built
 # print(xdd)
 # print(len(xdd))  # 3600
 # print(len(list(set(xdd))))  # 600
 # which i assume means, we can remove 5/6 of all the branches at this level, since they're symmetirc
-# root.minmax(root)
