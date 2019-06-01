@@ -79,17 +79,18 @@ def recursive_combinations(pos, pawns, board, root):
         for _ in range(i):
             moves_approximation *= i
     thresh = len(pawns)
-    if moves_approximation > 50000000:
+    if moves_approximation > 500000000:
         for i in [x+1 for x in range(len(pawns))]:
             for _ in range(i):
                 moves_approximation /= i
             # print(moves_approximation)
-            if moves_approximation <= 50000000:
+            if moves_approximation <= 500000000:
                 break
-        print(f"there are {len(pawns)} pawns;\n"
-        f"moves approx is {moves_approximation} stopped at {i}\n"
-        f"& level of tree should be max: {len(pawns) - i}")
+        # print(f"there are {len(pawns)} pawns;\n"
+        # f"moves approx is {moves_approximation} stopped at {i}\n"
+        # f"& level of tree should be max: {len(pawns) - i}")
         thresh = len(pawns) - i
+        print(thresh)
 
     if root.level >= thresh:
         return

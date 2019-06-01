@@ -18,7 +18,7 @@ def bot_move(possible_positions, possible_pawns, pawn_picked_for_bot, board):
     else:
         bot_picked_position = random.choice(possible_positions)
         pawn_picked_for_player = random.choice(possible_pawns)
-    print(f"And chose the position {bot_picked_position} for it.")
+    print(f"And picked the position {bot_picked_position} for it.")
     possible_positions = [x for x in possible_positions if x != bot_picked_position]
     i, j = [int(x) for x in bot_picked_position]
     board[i][j] = pawn_picked_for_bot

@@ -11,7 +11,7 @@ if __name__ == "__main__":
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     print()
     # odd number - bot move after `while`
-    while move < 3:
+    while move < 11:
         if not move % 2:
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print(f"It is now a turn numero {move+1} and the PLAYER's move.")
@@ -57,6 +57,9 @@ if __name__ == "__main__":
     print("And it is a QUARTO-BOT's move now.")
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     print()
+
+    import time
+    time.sleep(4)
 
     while move < 16:
         if not move % 2:
