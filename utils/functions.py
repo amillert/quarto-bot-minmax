@@ -28,7 +28,6 @@ def is_horizontally_winning(board):
         for i in range(len(board)):
             tmp = set([x[i] if x != " " else x for x in row])
             if len(tmp) == 1 and tmp != {" "}:
-                print("weszloooo")
                 return True
     return False
 
@@ -66,26 +65,36 @@ def minmax(root, last_picked_pawn, steps=[]):
     if not has_empty_spot(root.board):
         winning = check_if_winning(root.board)
         if winning and [x[1] for x in steps][0] == last_picked_pawn:
-            print("Board")
-            for row in root.board:
-                print(row)
-            print("IS WINNING!")
-            print("WINNING STEPS")
+            # winning board, return steps leading to it
             return steps
     for move in root.moves:
         i, j, pawn = find_difference_between_boards(root.board, move.board)
         position = ''.join([str(i), str(j)])
-        # that's cheating, dunno if not totaly bad approach
-        # otherwise last move is always last... which is weird
         return minmax(move, last_picked_pawn, [[position, pawn]]+steps)
-    # return draw move
 
 
 def recursive_combinations(pos, pawns, board, root):
-    # import time
+    moves_approximation = 1
+    for i in [x+1 for x in range(len(pawns))]:
+        for _ in range(i):
+            moves_approximation *= i
+    thresh = len(pawns)
+    if moves_approximation > 50000000:
+        for i in [x+1 for x in range(len(pawns))]:
+            for _ in range(i):
+                moves_approximation /= i
+            # print(moves_approximation)
+            if moves_approximation <= 50000000:
+                break
+        print(f"there are {len(pawns)} pawns;\n"
+        f"moves approx is {moves_approximation} stopped at {i}\n"
+        f"& level of tree should be max: {len(pawns) - i}")
+        thresh = len(pawns) - i
+
+    if root.level >= thresh:
+        return
     if pawns:
         combs = [[x, y] for x in pos for y in pawns]
-        # print(f"{len(combs)} combinations, {len(pos)} positions, {len(pawns)} pawns")
         for comb in combs:
             board_cpy = copy.deepcopy(board)
             pos_comb, pawn_comb = comb
@@ -95,10 +104,4 @@ def recursive_combinations(pos, pawns, board, root):
             rest_pawns = [x for x in pawns if x != pawn_comb]
             node = Move(copy.deepcopy(board_cpy), copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns), root.level+1)
             root.add_move(node)
-            # print()
-            # print(f"root at level {root.level} added node on level {node.level}")
-            # print(f"root has {len(root.moves)} moves already")
             recursive_combinations(copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns), copy.deepcopy(board_cpy), node)
-    # else:
-    #     print("END of branch")
-        ### return root
