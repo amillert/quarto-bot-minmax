@@ -1,6 +1,8 @@
 import copy
 import random
 import numpy as np
+import tkinter as tk
+import os
 from collections import OrderedDict
 
 pos = [f"{i}{j}" for i in range(4) for j in range(4)]
@@ -9,8 +11,10 @@ pos = pos[9:]
 pawns = ["{0:04b}".format(x) for x in range(16)]
 pawnss = pawns[:9]
 pawns = pawns[9:]
-board = [["", "", "", ""], ["", "", "", ""], ["", "", "", ""], ["", "", "", ""]]
+board = [["", "", "", ""], ["", "", "", ""],
+         ["", "", "", ""], ["", "", "", ""]]
 moves_dict = OrderedDict()
+
 
 def print_board():
     print("Showing board:")
@@ -18,10 +22,12 @@ def print_board():
         print(row)
     print()
 
+
 def bot_random_move(possible_positions, possible_pawns, pawn_picked_for_bot):
     bot_chosen_position = random.choice(possible_positions)
     print("Bot randomly picked position: ", bot_chosen_position)
-    possible_positions = [x for x in possible_positions if x != bot_chosen_position]
+    possible_positions = [
+        x for x in possible_positions if x != bot_chosen_position]
     pawn_chosen_for_player = random.choice(possible_pawns)
     possible_pawns = [x for x in possible_pawns if x != pawn_picked_for_bot]
     print("Bot randomly picked pawn: ", pawn_chosen_for_player)
@@ -32,13 +38,16 @@ def bot_random_move(possible_positions, possible_pawns, pawn_picked_for_bot):
     print()
     return possible_positions, possible_pawns, pawn_chosen_for_player
 
+
 def user_move(possible_positions, possible_pawns, pawn_chosen_for_player):
     print(f"Pawn chosen for you is: {pawn_chosen_for_player}")
     print("Possible positions are: ", possible_positions)
     print("Where do You wish to place Your pawn? ")
     user_picked_position = input()
-    assert len(str(user_picked_position)) == 2, "You must pass positions on the board"
-    possible_positions = [x for x in possible_positions if x != str(user_picked_position)]
+    assert len(str(user_picked_position)
+               ) == 2, "You must pass positions on the board"
+    possible_positions = [
+        x for x in possible_positions if x != str(user_picked_position)]
     possible_pawns = [x for x in possible_pawns if x != pawn_chosen_for_player]
     print("Possible pawns are: ", possible_pawns)
     print("What pawn do You wish to choose for the bot? ")
@@ -50,16 +59,39 @@ def user_move(possible_positions, possible_pawns, pawn_chosen_for_player):
     print()
     return possible_positions, possible_pawns, pawn_picked_for_bot
 
+
 move = 0
 
 pawn_chosen_for_player = random.choice(pawns)
 pawns = [x for x in pawns if x != pawn_chosen_for_player]
 
+board = tk.Tk()
+board.title("Quarto")
+script_dir = os.path.dirname(__file__)
+
+for i in range(4):
+
+    rel_path = "img/1111.png"
+    abs_file_path = os.path.join(script_dir, rel_path)
+    photo = tk.PhotoImage(file=abs_file_path)
+    for p in range(10):
+        b = tk.Label(image=photo)
+        b.grid(row=i, column=p)
+    # rel_path = "img/0000.png"
+    # abs_file_path = os.path.join(script_dir, rel_path)
+    # photo = tk.PhotoImage(file=abs_file_path)
+    # for j in range(5):
+    #     b = tk.Label(image=photo)
+    #     b.grid(row=i, column=j)
+tk.mainloop()
+
 while move < 2:
     if not move % 2:
-        pos, pawns, pawn_picked_for_bot = user_move(pos, pawns, pawn_chosen_for_player)
+        pos, pawns, pawn_picked_for_bot = user_move(
+            pos, pawns, pawn_chosen_for_player)
     else:
-        pos, pawns, pawn_chosen_for_player = bot_random_move(pos, pawns, pawn_picked_for_bot)
+        pos, pawns, pawn_chosen_for_player = bot_random_move(
+            pos, pawns, pawn_picked_for_bot)
     move += 1
 
 print("outside loop")
@@ -71,6 +103,8 @@ print("Time for bots' move")
 print(moves_dict)
 print(board)
 xdd = []
+
+
 class Move:
     def __init__(self, board, rest_positions, rest_pawns, level=0):
         self.board = board.copy()
@@ -78,14 +112,15 @@ class Move:
         self.rest_pawns = rest_pawns
         self.moves = []
         self.level = level
-    
+
     def add_move(self, move):
-        assert isinstance(move, Move), f"Single move must be of type `Move`, passed type: {type(move)}"
+        assert isinstance(
+            move, Move), f"Single move must be of type `Move`, passed type: {type(move)}"
         print(type(self.moves))
         print(self.moves)
         print("ADD move moves: ", len(self.moves))
         self.moves.append(move)
-    
+
     @staticmethod
     def transpose(board):
         return [[x] for x in zip(*board)]
@@ -116,7 +151,8 @@ class Move:
         diagonal2 = [board[length-i-1][i] for i in [x for x in range(length)]]
 
         for diagonal in [diagonal1, diagonal2]:
-            for i in range(len(diagonal[0])):  # it's same as length, but these two mean sth else
+            # it's same as length, but these two mean sth else
+            for i in range(len(diagonal[0])):
                 if len(set([x[i] for x in diagonal])) == 1:
                     return True
         return False
@@ -141,7 +177,7 @@ class Move:
             for move in root.moves:
                 self.minmax(move)
         return
-    
+
     def traverse_moves(self, root, level):
         import hashlib
         if root.moves:
@@ -149,12 +185,14 @@ class Move:
                 # Checking if all the boards on the same level are the same
                 # Seem like they're not, which is what we wanted to prove
                 print(root.level, len(root.moves))
-                six_digits_hash = hashlib.sha1(str(sorted([x.board for x in root.moves])).encode()).hexdigest()[-6:]
+                six_digits_hash = hashlib.sha1(
+                    str(sorted([x.board for x in root.moves])).encode()).hexdigest()[-6:]
                 print(six_digits_hash)
                 xdd.append(six_digits_hash)
             for move in root.moves:
                 self.traverse_moves(move, level)
         return
+
 
 def recursive_combinations(pos, pawns, board, root):
     # import time
@@ -171,12 +209,15 @@ def recursive_combinations(pos, pawns, board, root):
             board_cpy[i][j] = pawn_comb
             rest_pos = [x for x in pos if x != pos_comb]
             rest_pawns = [x for x in pawns if x != pawn_comb]
-            node = Move(copy.deepcopy(board_cpy), copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns), root.level+1)
+            node = Move(copy.deepcopy(board_cpy), copy.deepcopy(
+                rest_pos), copy.deepcopy(rest_pawns), root.level+1)
             root.add_move(node)
-            recursive_combinations(copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns), copy.deepcopy(board_cpy), node)
+            recursive_combinations(copy.deepcopy(rest_pos), copy.deepcopy(
+                rest_pawns), copy.deepcopy(board_cpy), node)
     else:
         print("END of branch")
         # return root
+
 
 # this part is only to ommit making moves in random while
 for po, pa in zip(poss, pawnss):
