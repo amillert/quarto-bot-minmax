@@ -14,7 +14,7 @@ def bot_move(possible_positions, possible_pawns, pawn_picked_for_bot, board):
     pawn_picked_for_player = random.choice(possible_pawns)
     print(f"The pawn picked for the player is: {pawn_picked_for_player}")
     possible_pawns = [x for x in possible_pawns if x != pawn_picked_for_player]
-    return possible_positions, possible_pawns, pawn_picked_for_player, board
+    return possible_positions, possible_pawns, pawn_picked_for_player, board, bot_picked_position
 
 
 def user_move(possible_positions, possible_pawns, pawn_picked_for_player, board):

@@ -15,12 +15,12 @@ if __name__ == "__main__":
         if not move % 2:
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print(f"It is now a turn numero {move+1} and the PLAYER's move.")
-            pos, pawns, pawn_picked_for_bot, board = dummy.user_move(
-                pos, pawns, pawn_picked_for_player, board)
+            # pos, pawns, pawn_picked_for_bot, board = dummy.user_move(
+            #     pos, pawns, pawn_picked_for_player, board)
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print()
-            # pos, pawns, pawn_picked_for_bot = intelligent.user_move(
-                # pos, pawns, pawn_picked_for_player)
+            pos, pawns, pawn_picked_for_bot, board = intelligent.user_move(
+                pos, pawns, pawn_picked_for_player, board)
             if f.check_if_winning(board):
                 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
                 print("It is a winning board:")
@@ -31,11 +31,15 @@ if __name__ == "__main__":
             last_picked_pawn = pawn_picked_for_bot
         else:
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-            print(f"It is now a turn numero {move+1} and the QUARTO-BOT's move.")
-            pos, pawns, pawn_picked_for_player, board = dummy.bot_move(
+            print(
+                f"It is now a turn numero {move+1} and the QUARTO-BOT's move.")
+            pos, pawns, pawn_picked_for_player, board, bot_picked_position = dummy.bot_move(
                 pos, pawns, pawn_picked_for_bot, board)
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print()
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            print("Bot picked position")
+            print(bot_picked_position)
             if f.check_if_winning(board):
                 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
                 print("It is a winning board:")
@@ -65,10 +69,10 @@ if __name__ == "__main__":
         if not move % 2:
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print(f"It is now a turn numero {move+1} and the PLAYER's move.")
-            pos, pawns, pawn_picked_for_bot, board = dummy.user_move(
+            # pos, pawns, pawn_picked_for_bot, board = dummy.user_move(
+                # pos, pawns, pawn_picked_for_player, board)
+            pos, pawns, pawn_picked_for_bot = intelligent.user_move(
                 pos, pawns, pawn_picked_for_player, board)
-            # pos, pawns, pawn_picked_for_bot = intelligent.user_move(
-            #     pos, pawns, pawn_picked_for_player)
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print()
             if f.check_if_winning(board):
@@ -80,7 +84,8 @@ if __name__ == "__main__":
                 exit(3)
         else:
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-            print(f"It is now a turn numero {move+1} and the QUARTO-BOT's move.")
+            print(
+                f"It is now a turn numero {move+1} and the QUARTO-BOT's move.")
             pos, pawns, pawn_picked_for_player, board = intelligent.bot_move(
                 pos, pawns, pawn_picked_for_bot, board)
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
@@ -93,7 +98,7 @@ if __name__ == "__main__":
                 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
                 exit(4)
         move += 1
-    
+
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     print("The game has ended and it is a DRAW.")
     print("Nobody won this time.")
