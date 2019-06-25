@@ -1,0 +1,17 @@
+Oznaczenie figurek 4 cyfry
+
+Pierwsza cyfra wysokość
+1 - wysoka
+0 - niska
+
+Druga cyfra jaka góra
+1 - z dziurką
+0 - płaska
+
+Trzecia cyfra kolor
+1 - białe
+0 - czarne
+
+Czwarta cyfra kształt
+1 - okrągłe
+0 - kwadratowe
