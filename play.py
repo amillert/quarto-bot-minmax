@@ -86,7 +86,7 @@ if __name__ == "__main__":
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print(
                 f"It is now a turn numero {move+1} and the QUARTO-BOT's move.")
-            pos, pawns, pawn_picked_for_player, board = intelligent.bot_move(
+            pos, pawns, pawn_picked_for_player, board, bot_picked_position = intelligent.bot_move(
                 pos, pawns, pawn_picked_for_bot, board)
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print()

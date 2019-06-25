@@ -25,7 +25,7 @@ def bot_move(possible_positions, possible_pawns, pawn_picked_for_bot, board):
     print("The board looks like so:")
     f.print_board(board)
     possible_pawns = [x for x in possible_pawns if x != pawn_picked_for_player]
-    return possible_positions, possible_pawns, pawn_picked_for_player, board
+    return possible_positions, possible_pawns, pawn_picked_for_player, board, bot_picked_position
 
 
 def user_move(possible_positions, possible_pawns, pawn_picked_for_player, board):
