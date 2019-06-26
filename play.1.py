@@ -21,13 +21,6 @@ if __name__ == "__main__":
             print()
             pos, pawns, pawn_picked_for_bot, board = intelligent.user_move(
                 pos, pawns, pawn_picked_for_player, board)
-            if f.check_if_winning(board):
-                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                print("It is a winning board:")
-                f.print_board(board)
-                print("The game has been won by the PLAYER!")
-                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                exit(1)
             last_picked_pawn = pawn_picked_for_bot
         else:
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
@@ -40,13 +33,6 @@ if __name__ == "__main__":
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print("Bot picked position")
             print(bot_picked_position)
-            if f.check_if_winning(board):
-                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                print("It is a winning board:")
-                f.print_board(board)
-                print("The game has been won by the QUARTO-BOT!")
-                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                exit(2)
             last_picked_pawn = pawn_picked_for_player
         move += 1
 
@@ -75,13 +61,6 @@ if __name__ == "__main__":
                 pos, pawns, pawn_picked_for_player, board)
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print()
-            if f.check_if_winning(board):
-                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                print("It is a winning board:")
-                f.print_board(board)
-                print("The game has been won by the PLAYER!")
-                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                exit(3)
         else:
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print(
@@ -90,13 +69,6 @@ if __name__ == "__main__":
                 pos, pawns, pawn_picked_for_bot, board)
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print()
-            if f.check_if_winning(board):
-                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                print("It is a winning board:")
-                f.print_board(board)
-                print("The game has been won by the QUARTO-BOT!")
-                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                exit(4)
         move += 1
 
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")

@@ -25,15 +25,49 @@ def has_empty_spot(list):
 
 def is_horizontally_winning(board):
     for row in board:
-        for i in range(len(board)):
-            tmp = set([x[i] if x != " " else x for x in row])
-            if len(tmp) == 1 and tmp != {" "}:
-                return True
+        o = 0
+        for element in row:
+            if element != ' ':
+                o = o + 1
+        if o == len(row):
+            return checkWinningBitsHorizontaly(row)
+    return False
+
+def checkWinningBitsHorizontaly(row):
+    for elementIdx in range(4):
+        k = ''
+        for element in row:
+            k = k + str(element[elementIdx])
+        if(k == '1111' or k == '0000'):
+            return True
+    return False
+
+
+def checkWinningBitsVerticaly(row):
+    for bitNumber in range(len(row[0])):
+        o = 0
+        k = ''
+        for element in row[0]:
+            k = k + str(element[bitNumber])
+        if(k == '1111' or k == '0000'):
+            return True
     return False
 
 
 def is_vertically_winning(board):
-    is_horizontally_winning(transpose(board))
+    transposedBoard = transpose(board)
+    for row in transposedBoard:
+        print(type(row))
+        o = 0
+        for i in range(len(transposedBoard)):
+            print(row[0][i])
+            if row[0][i] != ' ':
+                o = o + 1
+        print(o)
+        if(o == 4):
+            result = checkWinningBitsVerticaly(row)
+            return result
+    return False
 
 
 def is_diagonally_winning(board):
