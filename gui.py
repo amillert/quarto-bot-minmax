@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter.messagebox import showinfo
+import sys
 import numpy as np
 import os
 import gameplay.intelligent as intelligent
@@ -13,10 +15,8 @@ board = [[" ", " ", " ", " "], [" ", " ", " ", " "], [" ", " ", " ", " "], [" ",
 move = 0
 last_picked_pawn = None
 
-
-setpole = False
-chosepole = False
-chosenFigure = ""
+gameRoot = []
+labels = []
 figures = []
 fields = []
 photos = []
@@ -41,8 +41,10 @@ class Tile(tk.Label):
         self.setPhoto(16)
         last_picked_pawn = pawn_picked_for_bot
         print("QUARTO-BOT's move.")
+        global labels
+        labels[0]['text'] = "Ruch Quarto Bota !"
         pos, pawns, pawn_picked_for_player, board, bot_picked_position = intelligent.bot_move(
-            pos, pawns, pawn_picked_for_bot, board)
+            pos, pawns, pawn_picked_for_bot, board) 
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         print()
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
@@ -128,7 +130,7 @@ class Main():
                   command=self.start).pack()
         self.mainFrame.pack(padx=10, pady=10)
         self.player1Frame = tk.Frame(self.parent)
-        self.selectFrame = tk.Frame(self.parent)
+        self.selectFrame = tk.Frame(self.parent, background='#ececec')
         self.gameFrame = tk.Frame(self.parent)
         self.redBar = tk.Frame(width=70, height=680, background="red")
         self.greenBar = tk.Frame(width=70, height=680, background="green")
@@ -196,21 +198,31 @@ class Main():
     def start(self):
         self.mainFrame.forget()
         self.createboard()
-        self.player1Frame.grid(row=0, column=0)
-        self.greenBar.grid(row=0, column=1)
-        self.gameFrame.grid(row=0, column=2)
-        self.redBar.grid(row=0, column=3)
+        notifi = tk.Label(text="Twój ruch !", font=("Roboto", 13))
+        notifi.grid(row=0, column=2)
+        labels.append(notifi)
+        self.player1Frame.grid(row=1, column=0)
+        self.greenBar.grid(row=1, column=1)
+        self.gameFrame.grid(row=1, column=2)
+        self.redBar.grid(row=1, column=3)
         self.createSelectFrame()
         userMove()
         return
 
     def createSelectFrame(self):
-        self.selectFrame.grid(row=0, column=4)
+        self.selectFrame.grid(row=1, column=4)
+        self.whiteBar = tk.Frame(self.selectFrame, height=220, background="#ececec")
+        self.whiteBar.grid(row=0, column=0)
+        self.whiteBar2 = tk.Frame(self.selectFrame, height=220, background="#ececec")
+        self.whiteBar2.grid(row=3, column=0)
         tile = Tile(self.selectFrame, photos[16], 00000000)
-        tile.grid(row=0, column=0)
-        figures.append(tile)
+        tile.grid(row=2, column=0)
+        label = tk.Label(self.selectFrame, text="Aktualna figura", bg='#ececec', font=("Roboto", 13))
+        label.grid(row=1, column=0)
+        figures.append(tile)  
 
 def userMove():
+    labels[0]['text'] = "Twój ruch !"
     changeSelectedPawn(pawn_picked_for_player)
     deletePawnFromChoose(pawn_picked_for_player)
     print(f"PLAYER has been given {pawn_picked_for_player} pawn.")
@@ -237,10 +249,34 @@ def checkIsWinning(who):
         play.f.print_board(board)
         print("The game has been won by the " + who)
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        exit(2)
+        if who == "QUARTO BOT":
+            labels[0]['text'] = "PRZEGRAŁEŚ !"
+            popup_bonus(who)
+        elif who == "USER":
+            labels[0]['text'] = "WYGRAŁEŚ !"
+            popup_bonus(who)
+
+def popup_bonus(who):
+    win = tk.Toplevel()
+    win.wm_title("Koniec gr")
+
+    if who == "QUARTO BOT":
+        l = tk.Label(win, text="PRZEGRAŁEŚ !")
+        l.grid(row=0, column=0)
+    elif who == "USER":
+        l = tk.Label(win, text="WYGRAŁEŚ !")
+        l.grid(row=0, column=0)
+    
+
+    b = tk.Button(win, text="Zakończ")
+    b.bind('<Button-1>', end)
+    b.grid(row=1, column=0)
+
+def end(event):
+    root.destroy()
 
 if __name__ == '__main__':
     root = tk.Tk()
     root.title("Quarto")
-    Main(root)
+    gameRoot.append(Main(root))
     root.mainloop()
