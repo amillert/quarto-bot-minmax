@@ -56,14 +56,11 @@ def checkWinningBitsVerticaly(row):
 
 def is_vertically_winning(board):
     transposedBoard = transpose(board)
-    for row in transposedBoard:
-        print(type(row))
+    for row in transposedBoard:        
         o = 0
-        for i in range(len(transposedBoard)):
-            print(row[0][i])
+        for i in range(len(transposedBoard)):           
             if row[0][i] != ' ':
-                o = o + 1
-        print(o)
+                o = o + 1       
         if(o == 4):
             result = checkWinningBitsVerticaly(row)
             return result
@@ -140,3 +137,7 @@ def recursive_combinations(pos, pawns, board, root):
             node = Move(copy.deepcopy(board_cpy), copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns), root.level+1)
             root.add_move(node)
             recursive_combinations(copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns), copy.deepcopy(board_cpy), node)
+
+
+
+            
