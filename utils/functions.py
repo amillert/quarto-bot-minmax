@@ -11,7 +11,13 @@ def print_board(board):
 
 
 def transpose(board):
-    return [[x] for x in zip(*board)]
+    newMatrix=[]
+    for i in range(4):
+        tmp=[]
+        for j in range(4):
+            tmp.append(board[j][i])
+        newMatrix.append(tmp)
+    return newMatrix
 
 
 # @staticmethod
@@ -31,10 +37,8 @@ def is_horizontally_winning(board):
                 return True
     return False
 
-
 def is_vertically_winning(board):
-    is_horizontally_winning(transpose(board))
-
+    return is_horizontally_winning(transpose(board))
 
 def is_diagonally_winning(board):
     length = len(board[0])
