@@ -1,6 +1,6 @@
 import copy
 
-from utils.setup import LOOSING, DRAW, WINNING, IDLE
+from utils.setup import DRAW, WINNING, IDLE
 from move import Move
 
 
@@ -64,7 +64,6 @@ def find_difference_between_boards(board_x, board_y):
 
 
 def check_board_result(board):
-    #  this one to be checked if not reversed statement
     multi = -1 if len([x for sublist in board for x in sublist if x != " "]) % 2 else 1
     # full board
     if check_if_winning(board):
@@ -76,15 +75,14 @@ def check_board_result(board):
         return IDLE
     
 
-def recursive_combinations(root, last_picked_pawn, thresh):
+def build_moves_tree(root, last_picked_pawn, thresh):
+    # used for chosing depth of the tree dependent on pawns left in game
     if 16 >= thresh > 13:
         thresh = 2
     elif 13 >= thresh > 11:
         thresh = 3
     elif 11 >= thresh > 8:
         thresh = 4
-    # elif 8 >= thresh > 6:
-    #     thresh = 5
     
     if root.level > thresh:
         return
@@ -95,8 +93,7 @@ def recursive_combinations(root, last_picked_pawn, thresh):
                      for pos in local_positions 
                      for pawn in local_pawns 
                      if (last_picked_pawn and pawn == last_picked_pawn) or not last_picked_pawn]
-    # print(len(combinations), root.level, thresh)
-    # print()
+    
     for combination in combinations:
         position, pawn = combination
         i, j = [int(x) for x in position]
@@ -106,10 +103,9 @@ def recursive_combinations(root, last_picked_pawn, thresh):
         board_cpy[i][j] = pawn
         move = Move(copy.deepcopy(board_cpy), positions_left, pawns_left, root, root.level+1)
         root.add_move(move)
-        recursive_combinations(move, None, thresh)
+        build_moves_tree(move, None, thresh)
         if move.level == thresh:
             return
-        # recursive_combinations(move, depth-1)
 
 def generate_paths(root):
     if not root.moves: return [[root]]
@@ -124,8 +120,6 @@ def shorten_paths(path, wins_only=True):
         board_result = check_board_result(node.board)
         if board_result == 1:
             return i + 1
-        # if board_result == -1:
-        #     return 0
     if wins_only:
         return 0
     else:
@@ -133,7 +127,6 @@ def shorten_paths(path, wins_only=True):
 
 def get_shortened_paths(root):
     generated_paths = generate_paths(root)
-    print("genrated: ", len(generated_paths))
     paths = [path[:shorten_paths(path, True)] for path in generated_paths]
     if not paths:
         paths = [path[:shorten_paths(path, False)] for path in generated_paths]
@@ -148,29 +141,10 @@ def get_most_common_path(all_paths):
     chosen_paths = [path for path in all_paths if len(path) == min_path_len and check_board_result(path[-1].board) == 1]
     if not chosen_paths:
         chosen_paths = all_paths
-    print("chosen_paths: ", len(chosen_paths))
-    # if not chosen_paths:
-    #     chosen_paths = [path for path in all_paths if len(path) == min_path_len and check_board_result(path[-1].board) == 0]
-    # if not chosen_paths:
-    #     chosen_paths = [path for path in all_paths if len(path) == min_path_len and check_board_result(path[-1].board) == 2]
-    # if not chosen_paths:
-    #     chosen_paths = [path for path in all_paths if len(path) == min_path_len and check_board_result(path[-1].board) == -1]
-    # elements in board with .
-    # rows in board with *
-    # bords in path with ~
+    # elements in board separated with `.`
+    # rows in board with `*`
+    # bords in path with `~`
     chosen_paths_stringified = ["~".join(["*".join([".".join(row) for row in node.board]) for node in path]) for path in chosen_paths]
-    print("chosen_paths_stringified: ", len(chosen_paths_stringified))
     distinct_paths_stringified = list(set(chosen_paths_stringified))
-    print("distinct_paths_stringified: ", len(distinct_paths_stringified))
-    print()
     most_common_path_stringified = sorted([[k, v] for k, v in {path: chosen_paths_stringified.count(path) for path in distinct_paths_stringified}.items()], key=lambda x: int(x[1]))[0]
-    # print()
-    # print()
-    # print()
-    # print(len([[row.split(".") for row in board.split("*")] for board in most_common_path_stringified[0].split("~")]))
-    # print([[row.split(".") for row in board.split("*")] for board in most_common_path_stringified[0].split("~")])
-    # exit(13)
     return [[row.split(".") for row in board.split("*")] for board in most_common_path_stringified[0].split("~")]
-
-# all_paths = get_shortened_paths(root)
-# most_common_path = get_most_common_path(all_paths)

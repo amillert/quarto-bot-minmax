@@ -11,15 +11,13 @@ if __name__ == "__main__":
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     print()
     # odd number - bot move after `while`
-    while move < 3:  # 11
-        print(pawns)
-        print(pos)
+    while move < 1:
         if not move % 2:
-            # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-            # print(f"It is now a turn numero {move+1} and the PLAYER's move.")
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            print(f"It is now a turn numero {move+1} and the PLAYER's move.")
             pos, pawns, pawn_picked_for_bot, board = dummy.user_move(
                 pos, pawns, pawn_picked_for_player, board)
-            # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print()
             # pos, pawns, pawn_picked_for_bot = intelligent.user_move(
                 # pos, pawns, pawn_picked_for_player)
@@ -32,11 +30,11 @@ if __name__ == "__main__":
                 exit(1)
             last_picked_pawn = pawn_picked_for_bot
         else:
-            # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-            # print(f"It is now a turn numero {move+1} and the QUARTO-BOT's move.")
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            print(f"It is now a turn numero {move+1} and the QUARTO-BOT's move.")
             pos, pawns, pawn_picked_for_player, board = dummy.bot_move(
                 pos, pawns, pawn_picked_for_bot, board)
-            # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print()
             if f.check_if_winning(board):
                 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
@@ -48,8 +46,6 @@ if __name__ == "__main__":
             last_picked_pawn = pawn_picked_for_player
         move += 1
     
-    # pawns.append(last_picked_pawn)
-
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     print("The initial random part has ended.")
     print("There are still {possible_pawns} left in the game.")
@@ -60,36 +56,18 @@ if __name__ == "__main__":
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     print()
 
-    # print()
-    # print()
-    # print()
-    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    # print()
-    # print()
-    # print()
-    # exit(13)
     pawns.append(last_picked_pawn)
-    import copy
     pawn_picked_for_bot = last_picked_pawn
-    print(pawns)
-    print(pos)
-    print(last_picked_pawn)
-    # exit(12)
 
     while move < 16:
         if not move % 2:
-            print(2)
-            # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-            # print(f"It is now a turn numero {move+1} and the PLAYER's move.")
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            print(f"It is now a turn numero {move+1} and the PLAYER's move.")
             pos, pawns, pawn_picked_for_bot, board = dummy.user_move(
                 pos, pawns, pawn_picked_for_player, board)
             # pos, pawns, pawn_picked_for_bot = intelligent.user_move(
             #     pos, pawns, pawn_picked_for_player)
-            # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print()
             if f.check_if_winning(board):
                 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
@@ -99,12 +77,11 @@ if __name__ == "__main__":
                 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
                 exit(3)
         else:
-            print(1)
-            # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-            # print(f"It is now a turn numero {move+1} and the QUARTO-BOT's move.")
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            print(f"It is now a turn numero {move+1} and the QUARTO-BOT's move.")
             pos, pawns, pawn_picked_for_player, board = intelligent.bot_move(
                 pos, pawns + [pawn_picked_for_bot], pawn_picked_for_bot, board)
-            # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             print()
             if f.check_if_winning(board):
                 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
