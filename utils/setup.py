@@ -7,3 +7,7 @@ pawns = [x for x in pawns if x != pawn_picked_for_player]
 board = [[" ", " ", " ", " "], [" ", " ", " ", " "], [" ", " ", " ", " "], [" ", " ", " ", " "]]
 move = 0
 last_picked_pawn = None
+LOOSING = -1
+DRAW = 0
+WINNING = 1
+IDLE = 2
