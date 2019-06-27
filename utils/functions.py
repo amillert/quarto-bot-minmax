@@ -1,5 +1,6 @@
 import copy
 
+from utils.setup import LOOSING, DRAW, WINNING, IDLE
 from move import Move
 
 
@@ -11,7 +12,7 @@ def print_board(board):
 
 
 def transpose(board):
-    return [[x] for x in zip(*board)]
+    return [list(x) for x in zip(*board)]
 
 
 # @staticmethod
@@ -20,7 +21,7 @@ def transpose(board):
 
 
 def has_empty_spot(list):
-    return [x for sub in list for x in sub if not x]
+    return [x for sub in list for x in sub if x == " "]
 
 
 def is_horizontally_winning(board):
@@ -33,7 +34,7 @@ def is_horizontally_winning(board):
 
 
 def is_vertically_winning(board):
-    is_horizontally_winning(transpose(board))
+    return is_horizontally_winning(transpose(board))
 
 
 def is_diagonally_winning(board):
@@ -58,51 +59,116 @@ def find_difference_between_boards(board_x, board_y):
     for i in range(len(board_y)):
         for j in range(len(board_x[i])):
             if board_x[i][j] != board_y[i][j]:
+                # position 0 due to the fact less empty board is being passed first
                 return i, j, [x for x in [board_x[i][j], board_y[i][j]] if x][0]
 
 
-def minmax(root, last_picked_pawn, steps=[]):
-    if not has_empty_spot(root.board):
-        winning = check_if_winning(root.board)
-        if winning and [x[1] for x in steps][0] == last_picked_pawn:
-            # winning board, return steps leading to it
-            return steps
-    for move in root.moves:
-        i, j, pawn = find_difference_between_boards(root.board, move.board)
-        position = ''.join([str(i), str(j)])
-        return minmax(move, last_picked_pawn, [[position, pawn]]+steps)
+def check_board_result(board):
+    #  this one to be checked if not reversed statement
+    multi = -1 if len([x for sublist in board for x in sublist if x != " "]) % 2 else 1
+    # full board
+    if check_if_winning(board):
+        # win depends on whose move it was
+        return multi * WINNING
+    elif not has_empty_spot(board):
+        return DRAW
+    else:
+        return IDLE
+    
 
-
-def recursive_combinations(pos, pawns, board, root):
-    moves_approximation = 1
-    for i in [x+1 for x in range(len(pawns))]:
-        for _ in range(i):
-            moves_approximation *= i
-    thresh = len(pawns)
-    if moves_approximation > 500000000:
-        for i in [x+1 for x in range(len(pawns))]:
-            for _ in range(i):
-                moves_approximation /= i
-            # print(moves_approximation)
-            if moves_approximation <= 500000000:
-                break
-        # print(f"there are {len(pawns)} pawns;\n"
-        # f"moves approx is {moves_approximation} stopped at {i}\n"
-        # f"& level of tree should be max: {len(pawns) - i}")
-        thresh = len(pawns) - i
-        print(thresh)
-
-    if root.level >= thresh:
+def recursive_combinations(root, last_picked_pawn, thresh):
+    if 15 >= thresh > 12:
+        thresh = 3
+    elif 12 >= thresh > 8:
+        thresh = 4
+    elif 8 >= thresh > 6:
+        thresh = 5
+    
+    if root.level > thresh:
         return
-    if pawns:
-        combs = [[x, y] for x in pos for y in pawns]
-        for comb in combs:
-            board_cpy = copy.deepcopy(board)
-            pos_comb, pawn_comb = comb
-            i, j = [int(x) for x in pos_comb]
-            board_cpy[i][j] = pawn_comb
-            rest_pos = [x for x in pos if x != pos_comb]
-            rest_pawns = [x for x in pawns if x != pawn_comb]
-            node = Move(copy.deepcopy(board_cpy), copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns), root.level+1)
-            root.add_move(node)
-            recursive_combinations(copy.deepcopy(rest_pos), copy.deepcopy(rest_pawns), copy.deepcopy(board_cpy), node)
+    
+    local_positions = root.rest_positions
+    local_pawns = root.rest_pawns
+    combinations = [[pos, pawn] 
+                     for pos in local_positions 
+                     for pawn in local_pawns 
+                     if (last_picked_pawn and pawn == last_picked_pawn) or not last_picked_pawn]
+    # print(len(combinations), root.level, thresh)
+    # print()
+    for combination in combinations:
+        position, pawn = combination
+        i, j = [int(x) for x in position]
+        positions_left = [x for x in local_positions if x != position]
+        pawns_left = [x for x in local_pawns if x != pawn]
+        board_cpy = copy.deepcopy(root.board)
+        board_cpy[i][j] = pawn
+        move = Move(copy.deepcopy(board_cpy), positions_left, pawns_left, root, root.level+1)
+        root.add_move(move)
+        recursive_combinations(move, None, thresh)
+        if move.level == thresh:
+            return
+        # recursive_combinations(move, depth-1)
+
+def generate_paths(root):
+    if not root.moves: return [[root]]
+    paths = []
+    for move in root.moves:
+        for path in generate_paths(move):
+            paths.append([root] + path)
+    return paths
+
+def shorten_paths(path, wins_only=True):
+    for i, node in enumerate(path):
+        board_result = check_board_result(node.board)
+        if board_result == 1:
+            return i + 1
+        # if board_result == -1:
+        #     return 0
+    if wins_only:
+        return 0
+    else:
+        return len(path)
+
+def get_shortened_paths(root):
+    generated_paths = generate_paths(root)
+    print("genrated: ", len(generated_paths))
+    paths = [path[:shorten_paths(path, True)] for path in generated_paths]
+    if not paths:
+        paths = [path[:shorten_paths(path, False)] for path in generated_paths]
+    less_paths = [path for path in paths if path]
+    if not less_paths:
+        less_paths = generated_paths
+    return less_paths
+
+def get_most_common_path(all_paths):
+    min_path_len = min([len(path) for path in all_paths])
+    print("min_path_len:", min_path_len)
+    chosen_paths = [path for path in all_paths if len(path) == min_path_len and check_board_result(path[-1].board) == 1]
+    if not chosen_paths:
+        chosen_paths = all_paths
+    print("chosen_paths: ", len(chosen_paths))
+    # if not chosen_paths:
+    #     chosen_paths = [path for path in all_paths if len(path) == min_path_len and check_board_result(path[-1].board) == 0]
+    # if not chosen_paths:
+    #     chosen_paths = [path for path in all_paths if len(path) == min_path_len and check_board_result(path[-1].board) == 2]
+    # if not chosen_paths:
+    #     chosen_paths = [path for path in all_paths if len(path) == min_path_len and check_board_result(path[-1].board) == -1]
+    # elements in board with .
+    # rows in board with *
+    # bords in path with ~
+    chosen_paths_stringified = ["~".join(["*".join([".".join(row) for row in node.board]) for node in path]) for path in chosen_paths]
+    print("chosen_paths_stringified: ", len(chosen_paths_stringified))
+    distinct_paths_stringified = list(set(chosen_paths_stringified))
+    print("distinct_paths_stringified: ", len(distinct_paths_stringified))
+    print()
+    most_common_path_stringified = sorted([[k, v] for k, v in {path: chosen_paths_stringified.count(path) for path in distinct_paths_stringified}.items()], key=lambda x: int(x[1]))[0]
+    # print()
+    # print()
+    # print()
+    # print(len([[row.split(".") for row in board.split("*")] for board in most_common_path_stringified[0].split("~")]))
+    # print([[row.split(".") for row in board.split("*")] for board in most_common_path_stringified[0].split("~")])
+    # exit(13)
+    return [[row.split(".") for row in board.split("*")] for board in most_common_path_stringified[0].split("~")]
+
+# all_paths = get_shortened_paths(root)
+# most_common_path = get_most_common_path(all_paths)
