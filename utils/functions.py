@@ -77,10 +77,12 @@ def check_board_result(board):
     
 
 def recursive_combinations(root, last_picked_pawn, thresh):
-    if 15 >= thresh > 12:
+    if 16 >= thresh > 13:
         thresh = 2
-    elif 12 >= thresh > 8:
+    elif 13 >= thresh > 11:
         thresh = 3
+    elif 11 >= thresh > 8:
+        thresh = 4
     # elif 8 >= thresh > 6:
     #     thresh = 5
     
