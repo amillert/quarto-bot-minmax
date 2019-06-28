@@ -1,8 +1,6 @@
-import utils.functions as f
-
-
 class Move:
     def __init__(self, board, rest_positions, rest_pawns, parent=None, level=0):
+        import utils.functions as f
         self.board = board
         self.rest_positions = rest_positions
         self.rest_pawns = rest_pawns

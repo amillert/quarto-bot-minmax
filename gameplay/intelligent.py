@@ -34,7 +34,7 @@ def bot_move(possible_positions, possible_pawns, pawn_picked_for_bot, board):
     i, j, pawn_picked_for_player = f.find_difference_between_boards(most_common_path[2], most_common_path[1])
     possible_pawns = [x for x in possible_pawns if x != pawn_picked_for_player]
     print(len(possible_pawns), len(possible_positions))
-    return possible_positions, possible_pawns, pawn_picked_for_player, board
+    return possible_positions, possible_pawns, pawn_picked_for_player, board, bot_picked_position
 
 
 def user_move(possible_positions, possible_pawns, pawn_picked_for_player, board):
